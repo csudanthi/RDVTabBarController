@@ -44,6 +44,11 @@
 @property (nonatomic, readonly) RDVTabBar *tabBar;
 
 /**
+ * Secondary bar; above tab bar and provided by callee
+ */
+@property (strong, nonatomic) UIView *secondaryBar;
+
+/**
  * The view controller associated with the currently selected tab item.
  */
 @property (nonatomic, weak) UIViewController *selectedViewController;
@@ -56,12 +61,17 @@
 /**
  * A Boolean value that determines whether the tab bar is hidden.
  */
-@property (nonatomic, getter=isTabBarHidden) BOOL tabBarHidden;
+@property (nonatomic, getter=isTabBarHidden, readonly) BOOL tabBarHidden;
+
+/**
+ * A Boolean value that determines whether the secondary bar is hidden.
+ */
+@property (nonatomic, getter=isSecondaryBarHidden, readonly) BOOL secondaryBarHidden;
 
 /**
  * Changes the visibility of the tab bar.
  */
-- (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated;
+- (void)setTabBarHidden:(BOOL)hidden secondaryBarHidden: (BOOL)secondaryBarHidden animated:(BOOL)animated;
 
 @end
 

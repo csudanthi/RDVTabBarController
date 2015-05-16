@@ -55,7 +55,7 @@
     
     [self setSelectedIndex:[self selectedIndex]];
     
-    [self setTabBarHidden:self.isTabBarHidden animated:NO];
+    [self setTabBarHidden:self.isTabBarHidden secondaryBarHidden:self.secondaryBarHidden animated:NO];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -185,16 +185,19 @@
     return _contentView;
 }
 
-- (void)setTabBarHidden:(BOOL)hidden animated:(BOOL)animated {
+- (void)setTabBarHidden:(BOOL)hidden secondaryBarHidden: (BOOL)secondaryBarHidden animated:(BOOL)animated {
     _tabBarHidden = hidden;
+    _secondaryBarHidden = secondaryBarHidden;
     
     __weak RDVTabBarController *weakSelf = self;
     
     void (^block)() = ^{
         CGSize viewSize = weakSelf.view.bounds.size;
         CGFloat tabBarStartingY = viewSize.height;
+        CGFloat secondaryBarStartingY = viewSize.height;
         CGFloat contentViewHeight = viewSize.height;
         CGFloat tabBarHeight = CGRectGetHeight([[weakSelf tabBar] frame]);
+        CGFloat secondaryBarHeight = CGRectGetHeight([[weakSelf secondaryBar] frame]);
         
         if (!tabBarHeight) {
             tabBarHeight = 49;
@@ -207,14 +210,23 @@
             }
             [[weakSelf tabBar] setHidden:NO];
         }
+        if (!secondaryBarHidden) {
+            secondaryBarStartingY = tabBarStartingY - secondaryBarHeight;
+            contentViewHeight -= secondaryBarHeight;
+            [[weakSelf secondaryBar] setHidden:NO];
+        }
         
         [[weakSelf tabBar] setFrame:CGRectMake(0, tabBarStartingY, viewSize.width, tabBarHeight)];
+        [[weakSelf secondaryBar] setFrame:CGRectMake(0, secondaryBarStartingY, viewSize.width, secondaryBarHeight)];
         [[weakSelf contentView] setFrame:CGRectMake(0, 0, viewSize.width, contentViewHeight)];
     };
     
     void (^completion)(BOOL) = ^(BOOL finished){
         if (hidden) {
             [[weakSelf tabBar] setHidden:YES];
+        }
+        if (secondaryBarHidden) {
+            [[weakSelf secondaryBar] setHidden:YES];
         }
     };
     
@@ -224,10 +236,6 @@
         block();
         completion(YES);
     }
-}
-
-- (void)setTabBarHidden:(BOOL)hidden {
-    [self setTabBarHidden:hidden animated:NO];
 }
 
 #pragma mark - RDVTabBarDelegate
